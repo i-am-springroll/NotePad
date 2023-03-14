@@ -41,8 +41,6 @@ class App:
         self.menu_show.add_command(label="拡大", command=lambda:self.change_font_size(10))
         self.menu_show.add_command(label="縮小", command=lambda:self.change_font_size(-10))
 
-        self.root.bind()
-
         self.root.mainloop()
 
     def create_new(self):
@@ -98,6 +96,13 @@ class App:
         self.textbox.config(font=("", self.font_size))
 
     def com_exit(self):
+        self.ask_save = messagebox.askyesnocancel("確認", "未保存内容は失われます。保存しますか?")
+        if self.ask_save == True:
+            self.overwrite_save()
+        elif self.ask_save == False:
+            pass
+        else:
+            return
         sys.exit()
 
 
