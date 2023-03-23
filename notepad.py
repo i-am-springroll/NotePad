@@ -1,6 +1,8 @@
 import tkinter as tk
+import tkinter.ttk as ttk
 from tkinter import messagebox
 from tkinter import filedialog
+from tkinter import colorchooser
 import sys
 import pyperclip as pyclip
 
@@ -22,6 +24,9 @@ class App:
         self.textbox = tk.Text(self.cv_notepad, font=("", 10))
         self.textbox.place(x=0, y=0, relwidth=1, relheight=1)
 
+        self.notebook = ttk.Notebook(self.cv_notepad)
+        self.tab = tk.Frame(self.notebook)
+        self.notebook.add(self.tab, text="新規タブ")
         self.menu_bar = tk.Menu(self.root)
         self.root.config(menu=self.menu_bar)
         self.menu_file = tk.Menu(self.root)
@@ -40,6 +45,10 @@ class App:
         self.menu_bar.add_cascade(label="表示", menu=self.menu_show)
         self.menu_show.add_command(label="拡大", command=lambda:self.change_font_size(10))
         self.menu_show.add_command(label="縮小", command=lambda:self.change_font_size(-10))
+        self.menu_show.add_command(label="ダークテーマ", command=self.change_theme)
+        self.menu_show.add_separator()
+        self.menu_show.add_command(label="文字色の変更", command=lambda:self.custom_color("fg"))
+        self.menu_show.add_command(label="背景色の変更", command=lambda:self.custom_color("bg"))
 
         self.root.mainloop()
 
@@ -94,6 +103,16 @@ class App:
     def change_font_size(self, event):
         self.font_size += event
         self.textbox.config(font=("", self.font_size))
+
+    def change_theme(self):
+        self.textbox.config(background="black", foreground="white")
+
+    def custom_color(self, position):
+        self.color = colorchooser.askcolor()
+        if position == "fg":
+            self.textbox.config(foreground=self.color[1])
+        elif position == "bg":
+            self.textbox.config(background=self.color[1])
 
     def com_exit(self):
         self.ask_save = messagebox.askyesnocancel("確認", "未保存内容は失われます。保存しますか?")
