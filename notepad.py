@@ -4,12 +4,18 @@ from tkinter import messagebox
 from tkinter import filedialog
 from tkinter import colorchooser
 import sys
+import json
 import pyperclip as pyclip
 
 class App:
     def __init__(self):
         self.filename = ""
         self.font_size = 10
+
+        self.path_json = "notepad/config.json"
+        with open(self.path_json, "r") as f:
+            self.jsn = json.load(f)
+
 
     def drawing(self):
         self.root = tk.Tk()
@@ -21,7 +27,7 @@ class App:
 
         self.cv_notepad = tk.Canvas(self.frame_notepad, width=500, height=300)
         self.cv_notepad.pack(expand=True, fill=tk.BOTH)
-        self.textbox = tk.Text(self.cv_notepad, font=("", 10))
+        self.textbox = tk.Text(self.cv_notepad, font=("", 13), fg=self.jsn["foreground"], bg=self.jsn["background"])
         self.textbox.place(x=0, y=0, relwidth=1, relheight=1)
 
         self.notebook = ttk.Notebook(self.cv_notepad)
@@ -50,6 +56,7 @@ class App:
         self.menu_show.add_command(label="文字色の変更", command=lambda:self.custom_color("fg"))
         self.menu_show.add_command(label="背景色の変更", command=lambda:self.custom_color("bg"))
 
+        self.root.protocol("WM_DELETE_WINDOW", self.com_exit)
         self.root.mainloop()
 
     def create_new(self):
@@ -111,8 +118,11 @@ class App:
         self.color = colorchooser.askcolor()
         if position == "fg":
             self.textbox.config(foreground=self.color[1])
+            self.jsn["foreground"] = self.color[1]
+            
         elif position == "bg":
             self.textbox.config(background=self.color[1])
+            self.jsn["background"] = self.color[1]
 
     def com_exit(self):
         self.ask_save = messagebox.askyesnocancel("確認", "未保存内容は失われます。保存しますか?")
@@ -122,6 +132,8 @@ class App:
             pass
         else:
             return
+        with open(self.path_json, "w") as f:
+           f.write(json.dumps(self.jsn))
         sys.exit()
 
 
